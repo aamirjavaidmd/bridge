@@ -194,7 +194,7 @@
 <header>
   <div>
     <div class="wordmark">bridge<span>.</span></div>
-    <div class="tagline">An agentic member of the cardiology care team</div>
+    <div class="tagline">An AI member of your cardiology care team</div>
   </div>
   <div class="pt-banner" id="ptBanner">
     <strong>Maria Alvarez · 67F · PT-1042</strong>
@@ -236,7 +236,7 @@
   <div class="sub">Medications adjusted · potassium abnormality corrected · heart-failure hospitalization avoided.</div>
   <p>One weekend signal, caught by continuous home monitoring and an agent that investigated,
      interviewed, and escalated — with a clinician who acted before it became an admission.</p>
-  <div class="sig">bridge · an agentic member of the cardiology care team</div>
+  <div class="sig">bridge · an AI member of your cardiology care team</div>
 </div></div>
 
 <div id="toast"></div>
@@ -346,11 +346,17 @@ function vitalsGrid(){const by=ANALYSIS.by, g=document.createElement('div'); g.c
   g.innerHTML=tiles.map((t,i)=>`<div class="vtile ${t.bad?'bad':''}" style="animation-delay:${i*0.08}s"><div class="k">${t.k}</div><div class="v">${t.v}${t.u||''}</div><div class="d">${t.d}</div></div>`).join('');
   return g;}
 /* ECG median-beat card */
-function ecgCard(idNum){const e=ANALYSIS.ecg, wrap=document.createElement('div'); wrap.className='ecg-card';
-  wrap.innerHTML=`<div class="row"><span class="lab">MEDIAN BEAT · LEAD I · HOME</span>
-    <span class="leg"><span><i class="bl"></i>90-day baseline</span><span><i class="td"></i>today (${e.recentDate})</span></span></div>
-    <canvas id="ecg${idNum}" width="1160" height="300"></canvas>
-    <div class="row"><span class="find" id="ecgFind${idNum}"></span><span class="note">computed vs median of ${e.nBaseline} prior beats · device-classified</span></div>`;
+function ecgCard(idNum, opts){opts=opts||{}; const e=ANALYSIS.ecg, wrap=document.createElement('div'); wrap.className='ecg-card';
+  if(opts.patient){  // patient-facing: the picture, no clinical readout
+    wrap.innerHTML=`<div class="row"><span class="lab">LEAD I · HOME</span>
+      <span class="leg"><span><i class="bl"></i>3-month baseline</span><span><i class="td"></i>today</span></span></div>
+      <canvas id="ecg${idNum}" width="1160" height="300"></canvas>`;
+  } else {  // clinician-facing: full computed detail
+    wrap.innerHTML=`<div class="row"><span class="lab">MEDIAN BEAT · LEAD I · HOME</span>
+      <span class="leg"><span><i class="bl"></i>90-day baseline</span><span><i class="td"></i>today (${e.recentDate})</span></span></div>
+      <canvas id="ecg${idNum}" width="1160" height="300"></canvas>
+      <div class="row"><span class="find" id="ecgFind${idNum}"></span><span class="note">computed vs median of ${e.nBaseline} prior beats · device-classified</span></div>`;
+  }
   return wrap;}
 /* worklist */
 const WL_ROWS=[
@@ -406,10 +412,9 @@ function seedInteractive(){interactiveStarted=false; stage='seeded'; qIdx=0; typ
   const head=document.createElement('div'); head.className='viewhead';
   head.innerHTML='Good evening, Maria <small>Day 5 home after your hospital stay · devices synced 21:40</small>';
   col.appendChild(head); col.appendChild(vitalsGrid());
-  const pe=ecgCard('P'); col.appendChild(pe);  // median-beat ECG under the vitals row
-  $('ecgFindP').textContent=`▲ NEW PEAKED T WAVE · +${ANALYSIS.ecg.tDelta} mV vs baseline`;
+  const pe=ecgCard('P',{patient:true}); col.appendChild(pe);  // median-beat ECG under the vitals row
   animateEcg($('ecgP'), gen);
-  col.appendChild(card('alert','<span class="eyebrow">⚠ bridge noticed a change · SAT 21:40</span>Your resting heart rate, weight, oxygen level, and heart-rate variability have all drifted from your <b>3-month baseline</b>, and today\'s heart tracing shows a <b>new peaked T wave</b> versus your usual. Nothing here means an emergency — but I\'d like to ask you a few quick questions.'));
+  col.appendChild(card('alert','<span class="eyebrow">bridge · SAT 21:40</span>Hi Maria, I am an AI agent working with your cardiology care team. Your vitals have drifted from your <b>3-month baseline</b>. Nothing here means an emergency — but I\'d like to ask you a few quick questions.'));
   $('ptComposer').style.display='none';
   const wl=$('careWorklist'); wl.innerHTML='';
   const wh=document.createElement('div'); wh.className='viewhead';

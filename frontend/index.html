@@ -129,6 +129,9 @@
   .composer .suggest{align-self:flex-start; font-family:'Inter'; font-size:11.5px; color:var(--muted);
     background:var(--card-2); border:1px dashed var(--line); border-radius:999px; padding:5px 12px; cursor:pointer; text-align:left;}
   .composer .suggest:hover{border-color:var(--red); color:var(--ink);}
+  .composebox{width:100%; min-height:150px; font-family:'Inter'; font-size:13px; line-height:1.55; color:var(--ink);
+    background:var(--card-2); border:1px solid var(--line); border-radius:10px; padding:11px 13px; resize:vertical; margin-top:6px; display:block;}
+  .composebox:focus{outline:none; border-color:var(--red);}
   .viewhead{font-family:'Schibsted Grotesk'; font-size:16px; font-weight:700; letter-spacing:-.01em;}
   .viewhead small{display:block; font-family:'Inter'; font-weight:400; font-size:11.5px; color:var(--muted); margin-top:2px;}
   #viewCare{flex-direction:column;}
@@ -462,7 +465,7 @@ async function finishInterview(){const g=gen, col=$('ptCol');
 
 /* interaction 2: open Maria's monitoring detail */
 async function openDetail(){showCare('detail');
-  if(['detail-open','assessing','assessed','ordered','closed'].includes(stage))return;
+  if(['detail-open','assessing','assessed','ordered','replied','composing','closed'].includes(stage))return;
   stage='detail-open'; const g=gen, L=$('detailLeft'), R=$('detailRight'); L.innerHTML=''; R.innerHTML='';
   const back=document.createElement('button'); back.className='backlink'; back.textContent='← BACK TO WORKLIST';
   back.onclick=()=>showCare('worklist'); L.appendChild(back);
@@ -506,21 +509,30 @@ async function orderAndSchedule(){if(stage!=='assessed')return; stage='ordered';
   const mrow=$('iwl-maria'); if(mrow) mrow.querySelector('.who span').textContent='Day 5 post-ADHF · HIGH — labs ordered, clinic booked';
   toast('Labs ordered and clinic visit booked by Dana Kim, NP.');
   await sleep(500); if(!alive(g))return;
-  const s=card('outcomecard', NP_ORDERS_HTML+'<br><button class="cta" id="btnSend">Send patient instructions</button>');
-  R.appendChild(s); scrollEnd(R); stage='replied'; $('btnSend').onclick=sendInstructions;}
+  const s=card('outcomecard', NP_ORDERS_HTML+'<br><button class="cta" id="btnSend">Compose message to patient</button>');
+  R.appendChild(s); scrollEnd(R); stage='replied'; $('btnSend').onclick=composePatientMessage;}
 
-/* interaction 5: send patient instructions + outcome */
-async function sendInstructions(){if(stage!=='replied')return; stage='closed';
-  const g=gen, R=$('detailRight'), col=$('ptCol'); $('btnSend').disabled=true;
-  const c=Object.assign(document.createElement('div'),{className:'toolchip',textContent:'send_care_instructions(PT-1042)'});
+/* interaction 5a: NP reviews/edits the patient message before it goes out */
+function composePatientMessage(){if(stage!=='replied')return; stage='composing';
+  const R=$('detailRight'); $('btnSend').disabled=true;
+  const c=card('','<span class="eyebrow">MESSAGE TO PATIENT · REVIEW &amp; EDIT</span><textarea id="patientMsg" class="composebox" spellcheck="false"></textarea><button class="cta" id="btnDeliver">Send to patient</button>');
+  R.appendChild(c); const ta=$('patientMsg'); ta.value=FINAL_INSTRUCTIONS; scrollEnd(R); ta.focus();
+  $('btnDeliver').onclick=deliverInstructions;}
+
+/* interaction 5b: deliver the (possibly edited) message, then linger, then outcome */
+async function deliverInstructions(){if(stage!=='composing')return; stage='closed';
+  const g=gen, R=$('detailRight'), col=$('ptCol');
+  const msg=($('patientMsg').value.trim())||FINAL_INSTRUCTIONS;
+  $('btnDeliver').disabled=true; $('patientMsg').disabled=true;
+  const c=Object.assign(document.createElement('div'),{className:'toolchip',textContent:'send_care_instructions(PT-1042) — edited & sent'});
   R.appendChild(c); scrollEnd(R); setTimeout(()=>c.classList.add('done'),600);
   setClock('SAT 2026-07-18 · 22:01');
-  await sleep(1000); if(!alive(g))return;
+  await sleep(900); if(!alive(g))return;
   showView('patient');
-  await typeThen(col,'from-agent',FINAL_INSTRUCTIONS,g,{pre:400,dur:1200}); if(!alive(g))return;
+  await typeThen(col,'from-agent',msg,g,{pre:400,dur:1300}); if(!alive(g))return;
   await sleep(700); if(!alive(g))return;
   col.appendChild(card('critical', PRECAUTIONS_HTML)); scrollEnd(col);
-  await sleep(2600); if(!alive(g))return;
+  await sleep(7000); if(!alive(g))return;  // linger so the instructions are readable before the finale
   $('overlay').classList.add('show');}
 
 /* ============ classic renderers (auto + live) ============ */

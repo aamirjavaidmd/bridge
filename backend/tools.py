@@ -10,6 +10,8 @@ import json
 from pathlib import Path
 from datetime import datetime
 
+import analysis
+
 DATA = Path(__file__).resolve().parent.parent / "data"
 
 
@@ -18,37 +20,30 @@ def _load(name: str) -> dict:
 
 
 def get_patient_profile(patient_id: str) -> dict:
-    """Demographics, problem list, meds, recent discharge summary, 90-day baselines."""
-    return _load("patient.json")
+    """Demographics, problem list, meds, discharge summary, 90-day baselines, devices."""
+    p = analysis.load_profile()
+    return {k: v for k, v in p.items() if k != "ecg_beats"}  # beats are large; fetched via ECG analysis
 
 
 def get_vitals_window(patient_id: str, days: int = 5) -> dict:
-    """Recent home-monitoring stream (HR q10min, daily BP/weight/SpO2/single-lead ECG)."""
-    stream = _load("vitals_stream.json")
-    return {"days": stream["days"][-days:], "deviation_summary": stream["deviation_summary"]}
+    """Recent home-monitoring stream plus the per-metric deviation computed vs baseline."""
+    p = analysis.load_profile()
+    return {
+        "window": p["home_vitals"][-days:],
+        "deviations": analysis.analyze_vitals(p),
+    }
 
 
 def compare_to_baseline(patient_id: str) -> dict:
-    """Compute deviations of the latest readings vs the 90-day baseline."""
-    p = _load("patient.json")["baseline_90d"]
-    latest = _load("vitals_stream.json")["days"][-1]
-    return {
-        "resting_hr": {
-            "latest": latest["resting_hr_bpm"],
-            "baseline_mean": p["resting_hr_bpm"]["mean"],
-            "z_score": round(
-                (latest["resting_hr_bpm"] - p["resting_hr_bpm"]["mean"]) / p["resting_hr_bpm"]["sd"], 1
-            ),
-        },
-        "weight": {
-            "latest_kg": latest["weight_kg"],
-            "baseline_mean_kg": p["weight_kg"]["mean"],
-            "delta_5d_kg": round(latest["weight_kg"] - 71.2, 1),
-            "threshold": ">2 kg over 3 days triggers HF alert",
-        },
-        "spo2": {"latest": latest["spo2_pct"], "baseline_mean": p["spo2_pct"]["mean"]},
-        "ecg": {"latest": latest["ecg"], "baseline": p["ecg"]},
-    }
+    """Real trend-deviation analysis: per-metric z-scores/trends + ECG morphology delta.
+
+    Delegates to analysis.summarize(), which computes everything from the
+    patient profile (see backend/analysis.py). ECG sample arrays are stripped
+    from the tool result to keep it compact for the model.
+    """
+    s = analysis.summarize(analysis.load_profile())
+    s["ecg"] = {k: v for k, v in s["ecg"].items() if k not in ("baseline_beat", "recent_beat")}
+    return s
 
 
 def message_patient(patient_id: str, message: str) -> dict:

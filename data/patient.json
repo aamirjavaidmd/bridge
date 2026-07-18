@@ -1,0 +1,47 @@
+{
+  "patient_id": "PT-1042",
+  "name": "Maria Alvarez",
+  "age": 67,
+  "sex": "F",
+  "problem_list": [
+    "HFrEF (LVEF 30%, TTE 07/2026)",
+    "CAD s/p STEMI 2023, DES to proximal LAD",
+    "Hypertension",
+    "CKD stage 3a (baseline Cr 1.3)",
+    "Type 2 diabetes"
+  ],
+  "recent_admission": {
+    "dates": "2026-07-08 to 2026-07-13",
+    "diagnosis": "Acute decompensated heart failure exacerbation",
+    "discharge_changes": [
+      "Spironolactone INCREASED 12.5 -> 25 mg daily",
+      "Furosemide 40 mg daily (resumed home dose)",
+      "Counseled on daily weights and 2g sodium diet"
+    ],
+    "discharge_weight_kg": 71.2,
+    "discharge_labs": { "K": 4.4, "Cr": 1.4, "BNP": 1240 }
+  },
+  "medications": [
+    "Sacubitril/valsartan 49/51 mg BID",
+    "Carvedilol 25 mg BID",
+    "Spironolactone 25 mg daily (increased at discharge)",
+    "Furosemide 40 mg daily",
+    "Dapagliflozin 10 mg daily",
+    "Aspirin 81 mg daily",
+    "Atorvastatin 80 mg daily",
+    "Metformin 1000 mg BID"
+  ],
+  "allergies": ["NKDA"],
+  "care_team": {
+    "np": "Dana Kim, NP — Cardiology, UCSF HF Clinic",
+    "cardiologist": "Dr. R. Chen",
+    "pharmacy": "UCSF Ambulatory Pharmacy"
+  },
+  "baseline_90d": {
+    "resting_hr_bpm": { "mean": 68, "sd": 4 },
+    "bp_mmhg": { "systolic_mean": 118, "diastolic_mean": 72 },
+    "spo2_pct": { "mean": 97, "sd": 1 },
+    "weight_kg": { "mean": 71.0, "sd": 0.6 },
+    "ecg": "Sinus rhythm, normal T-wave morphology on single-lead"
+  }
+}

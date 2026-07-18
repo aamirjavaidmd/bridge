@@ -1,0 +1,125 @@
+{
+  "description": "Recorded BRIDGE agent run (2026-07-18 21:40) used for deterministic demo replay. Live mode via backend/server.py reproduces this flow with real Claude tool-use calls.",
+  "events": [
+    {
+      "t": 0,
+      "type": "context",
+      "text": "Maria Alvarez, 67F. HFrEF (EF 30%), CAD s/p STEMI with LAD stent. Discharged 5 days ago after HF exacerbation. Spironolactone increased at discharge."
+    },
+    {
+      "t": 1400,
+      "type": "np_worklist",
+      "text": "NP panel view seeded: 6 monitored patients with agent-assigned risk tiers (LOW/MED/HIGH)."
+    },
+    {
+      "t": 3800,
+      "type": "vitals",
+      "text": "Home monitoring, day 5: resting HR 92 (baseline 68), weight +2.7 kg / 5 days, SpO2 94% (baseline 97), BP 128/80."
+    },
+    {
+      "t": 7600,
+      "type": "ecg_morph",
+      "text": "Single-lead ECG: NEW peaked T waves vs normal baseline morphology."
+    },
+    {
+      "t": 9600,
+      "type": "alert",
+      "text": "MONITORING ALERT \u2014 multi-signal deviation from 90-day baseline. Agent activated."
+    },
+    {
+      "t": 11200,
+      "type": "tool_call",
+      "name": "get_patient_profile"
+    },
+    {
+      "t": 12100,
+      "type": "tool_call",
+      "name": "get_vitals_window"
+    },
+    {
+      "t": 13000,
+      "type": "tool_call",
+      "name": "compare_to_baseline"
+    },
+    {
+      "t": 14200,
+      "type": "agent_thought",
+      "text": "HR +6 SD with 3-day uptrend, >2 kg weight gain, falling SpO2 \u2014 pattern consistent with recurrent volume overload. New peaked T waves 5 days after a spironolactone increase on top of sacubitril/valsartan and CKD 3a raises concern for hyperkalemia. Interviewing patient; screening red flags first."
+    },
+    {
+      "t": 17600,
+      "type": "patient_msg_out",
+      "text": "Hi Maria, it's your care team's monitoring assistant. Your home readings changed today and I'd like to check on you. First \u2014 any chest pain, pressure, or fainting?"
+    },
+    {
+      "t": 20600,
+      "type": "patient_msg_in",
+      "text": "No chest pain, no. I just feel more short of breath than usual today."
+    },
+    {
+      "t": 23000,
+      "type": "patient_msg_out",
+      "text": "Thank you. Is it harder to breathe when you lie flat \u2014 have you needed extra pillows or a recliner at night?"
+    },
+    {
+      "t": 25800,
+      "type": "patient_msg_in",
+      "text": "Yes \u2014 the last two nights I slept sitting up in the recliner. Lying flat makes it hard to breathe."
+    },
+    {
+      "t": 28200,
+      "type": "patient_msg_out",
+      "text": "That's helpful. Are you taking all your medicines, including the water pill dose that was changed at the hospital?"
+    },
+    {
+      "t": 30800,
+      "type": "patient_msg_in",
+      "text": "Yes, everything \u2014 including the new dose. My legs look puffier than last week too."
+    },
+    {
+      "t": 33200,
+      "type": "differential",
+      "text": "DIFFERENTIAL \u2014 1) Recurrent ADHF / volume overload (weight +2.7 kg, orthopnea, edema, HR uptrend, SpO2 drop). 2) Hyperkalemia (peaked T waves; spironolactone just increased + ARNI + CKD 3a). 3) Ischemia \u2014 less likely (no chest pain, no ST change). Triage: URGENT \u2014 needs labs within 12\u201324h; no red flags requiring ER now."
+    },
+    {
+      "t": 38200,
+      "type": "tool_call",
+      "name": "page_clinician"
+    },
+    {
+      "t": 39000,
+      "type": "np_msg_out",
+      "text": "URGENT page \u2014 Dana Kim, NP (covering)\nS: PT-1042 Alvarez, 67F HFrEF EF 30%, day 5 post-ADHF discharge.\nB: Spironolactone increased 12.5\u219225 mg at discharge; on sacubitril/valsartan; CKD 3a (Cr 1.4).\nA: Resting HR 92 vs baseline 68 (+6 SD, 3-day uptrend), weight +2.7 kg/5d, SpO2 94%, NEW peaked T waves on single-lead ECG. Reports orthopnea and worsening dyspnea; denies chest pain/syncope. Concern: recurrent HF exacerbation + possible hyperkalemia.\nR: Recommend BMP + BNP before Monday visit; consider holding spironolactone pending K. Clinic slot booked Mon 8:40 AM."
+    },
+    {
+      "t": 44200,
+      "type": "tool_call",
+      "name": "recommend_labs"
+    },
+    {
+      "t": 45000,
+      "type": "tool_call",
+      "name": "book_appointment"
+    },
+    {
+      "t": 46200,
+      "type": "np_msg_in",
+      "text": "Agree with your read. Co-signed the BMP + BNP for tomorrow AM draw at the lab near her. Hold spironolactone until K back. See her Monday 8:40. Good catch."
+    },
+    {
+      "t": 49400,
+      "type": "tool_call",
+      "name": "send_care_instructions"
+    },
+    {
+      "t": 50200,
+      "type": "patient_msg_out",
+      "text": "Maria, I shared your readings with Dana Kim, NP. Plan: a blood test tomorrow morning (order is in), pause the spironolactone (water pill) until she reviews it, and clinic Monday 8:40 AM. Go to the ER or call 911 right away if you have chest pain, fainting, palpitations, or you can't catch your breath at rest."
+    },
+    {
+      "t": 55000,
+      "type": "outcome",
+      "text": "Monday clinic: K+ 5.8, BNP rising. Spironolactone held, furosemide increased 40\u219280 mg, repeat labs Wednesday. Readmission averted \u2014 caught on a Saturday night, treated in clinic on Monday."
+    }
+  ]
+}

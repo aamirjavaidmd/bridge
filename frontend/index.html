@@ -61,6 +61,8 @@
   .from-agent{align-self:flex-start; background:var(--card); border:1px solid var(--line); border-bottom-left-radius:4px;}
   .from-patient{align-self:flex-end; background:var(--pink); border:1px solid #F3BBA8; border-bottom-right-radius:4px;}
   .from-np{align-self:flex-end; background:var(--blue-soft); border:1px solid #C6D9F2; border-bottom-right-radius:4px;}
+  .from-care{align-self:flex-start; background:var(--blue-soft); border:1px solid #C6D9F2; border-bottom-left-radius:4px;}
+  .sender{align-self:flex-start; font-family:'IBM Plex Mono'; font-size:10px; letter-spacing:.08em; color:var(--blue); margin:4px 0 -4px 4px;}
   .bubble.typing{display:flex; gap:4px; align-items:center; min-width:52px; min-height:34px;}
   .bubble.typing i{width:6px; height:6px; border-radius:50%; background:var(--muted); display:block; animation:blink 1s infinite;}
   .bubble.typing i:nth-child(2){animation-delay:.18s;} .bubble.typing i:nth-child(3){animation-delay:.36s;}
@@ -394,7 +396,7 @@ const THOUGHT_TEXT='HR +6 SD with a 3-day uptrend, +2.7 kg, SpO2 falling, HRV co
 function differentialHTML(){const e=ANALYSIS.ecg;
   return `<span class="eyebrow">DIFFERENTIAL &amp; TRIAGE</span><b>1 · Recurrent HF exacerbation</b> — weight +${ANALYSIS.by.weight_kg.delta} kg, orthopnea, edema, HR uptrend, SpO2 ↓<br><b>2 · Hyperkalemia</b> — new peaked T waves (+${e.tDelta} mV, T/R ${e.baseRatio}→${e.recentRatio}); spironolactone just ↑ + ARNI + CKD 3a<br><b>3 · Ischemia</b> — less likely: no chest pain, no ST deviation<br><br><b style="color:var(--red)">TRIAGE: HIGH PRIORITY</b> — prompt labs + clinician review · no red flags requiring ER now`;}
 const NP_ORDERS_HTML='<span class="eyebrow">DANA KIM, NP · PLAN ENACTED</span><b>Orders placed directly by covering NP:</b><ul class="precautions"><li>BMP + BNP — AM draw at lab near patient</li><li>HF clinic visit — next available slot booked</li><li>Hold spironolactone pending K<sup>+</sup></li></ul>';
-const FINAL_INSTRUCTIONS="Maria, I shared your readings with Dana Kim, NP, and she's already taken action. Plan: a blood test in the morning (the order is in), pause the spironolactone (water pill) until she reviews the result, and an early clinic visit that's now booked. I'll check in with you right after your labs.";
+const FINAL_INSTRUCTIONS="Hi Maria, this is Dana Kim, NP. Please obtain blood work in the morning (the order is in) and pause your spironolactone. We will get you in for an early clinic visit this week. I'll check in when your labs come back.";
 const PRECAUTIONS_HTML='<span class="eyebrow">GO TO THE ER / CALL 911 IF</span><ul class="precautions"><li>Chest pain or pressure</li><li>Fainting or near-fainting</li><li>Racing or irregular heartbeat</li><li>Can\'t catch your breath at rest</li></ul>';
 
 /* ============ interactive engine ============ */
@@ -529,10 +531,12 @@ async function deliverInstructions(){if(stage!=='composing')return; stage='close
   setClock('SAT 2026-07-18 · 22:01');
   await sleep(900); if(!alive(g))return;
   showView('patient');
-  await typeThen(col,'from-agent',msg,g,{pre:400,dur:1300}); if(!alive(g))return;
-  await sleep(700); if(!alive(g))return;
+  const sl=document.createElement('div'); sl.className='sender'; sl.textContent='DANA KIM, NP · YOUR CARE TEAM';
+  col.appendChild(sl); scrollEnd(col);
+  await typeThen(col,'from-care',msg,g,{pre:400,dur:1300}); if(!alive(g))return;  // NP takes over the chat
+  await sleep(600); if(!alive(g))return;
   col.appendChild(card('critical', PRECAUTIONS_HTML)); scrollEnd(col);
-  await sleep(7000); if(!alive(g))return;  // linger so the instructions are readable before the finale
+  await sleep(3000); if(!alive(g))return;  // brief dwell — the send was a deliberate click
   $('overlay').classList.add('show');}
 
 /* ============ classic renderers (auto + live) ============ */
@@ -555,7 +559,7 @@ const render={
   np_worklist(){add('npScroll',worklistCard('wl'));},
   escalate(){focusPane('np'); escalateRow($('wl-maria'));},
   np_orders(){add('npScroll',card('outcomecard',NP_ORDERS_HTML));},
-  p_out2(){focusPane('patient'); add('patientScroll',bubble('from-agent',FINAL_INSTRUCTIONS)); add('patientScroll',card('critical',PRECAUTIONS_HTML));},
+  p_out2(){focusPane('patient'); const sl=Object.assign(document.createElement('div'),{className:'sender',textContent:'DANA KIM, NP · YOUR CARE TEAM'}); add('patientScroll',sl); add('patientScroll',bubble('from-care',FINAL_INSTRUCTIONS)); add('patientScroll',card('critical',PRECAUTIONS_HTML));},
   outcome(){$('overlay').classList.add('show');}
 };
 const TRACE=[

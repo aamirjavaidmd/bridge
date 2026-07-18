@@ -196,11 +196,6 @@
     <div class="wordmark">bridge<span>.</span></div>
     <div class="tagline">An agentic member of the cardiology care team</div>
   </div>
-  <div class="ecg-wrap" id="ecgWrap">
-    <canvas id="ecg" width="680" height="128"></canvas>
-    <div class="ecg-label">LEAD I · HOME</div>
-    <div class="ecg-t" id="ecgT">T-wave: normal</div>
-  </div>
   <div class="pt-banner" id="ptBanner">
     <strong>Maria Alvarez · 67F · PT-1042</strong>
     HFrEF (EF 30%) · s/p STEMI, LAD DES · Discharged 5 days ago (ADHF)
@@ -411,7 +406,10 @@ function seedInteractive(){interactiveStarted=false; stage='seeded'; qIdx=0; typ
   const head=document.createElement('div'); head.className='viewhead';
   head.innerHTML='Good evening, Maria <small>Day 5 home after your hospital stay · devices synced 21:40</small>';
   col.appendChild(head); col.appendChild(vitalsGrid());
-  col.appendChild(card('alert','<span class="eyebrow">⚠ bridge noticed a change · SAT 21:40</span>Your resting heart rate, weight, oxygen level, and heart-rate variability have all drifted from your <b>3-month baseline</b>, and today\'s heart tracing looks different from your usual. Nothing here means an emergency — but I\'d like to ask you a few quick questions.'));
+  const pe=ecgCard('P'); col.appendChild(pe);  // median-beat ECG under the vitals row
+  $('ecgFindP').textContent=`▲ NEW PEAKED T WAVE · +${ANALYSIS.ecg.tDelta} mV vs baseline`;
+  animateEcg($('ecgP'), gen);
+  col.appendChild(card('alert','<span class="eyebrow">⚠ bridge noticed a change · SAT 21:40</span>Your resting heart rate, weight, oxygen level, and heart-rate variability have all drifted from your <b>3-month baseline</b>, and today\'s heart tracing shows a <b>new peaked T wave</b> versus your usual. Nothing here means an emergency — but I\'d like to ask you a few quick questions.'));
   $('ptComposer').style.display='none';
   const wl=$('careWorklist'); wl.innerHTML='';
   const wh=document.createElement('div'); wh.className='viewhead';

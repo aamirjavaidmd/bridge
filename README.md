@@ -2,7 +2,7 @@
 
 **Bridging hospital-based care (20th-century medicine) with AI-enabled continuous home care (21st-century medicine).**
 
-Heart failure is the #1 cause of readmission in US medicine. The most dangerous window is the first two weeks after discharge — and the most dangerous hours are nights and weekends, when no one is watching the home-monitoring data. BRIDGE is an autonomous agent that watches, investigates, interviews the patient, escalates to a human clinician, and closes the loop — end to end.
+BRIDGE is an AI platform that bridges care between episodic hospital and clinic visits (20th century medicine) and continuous home-based monitoring (21st century medicine). With an initial focus on high-risk patients with chronic cardiovascular diseases (the top driver of morbidity/mortality and most expensive disease in the United States), the algorithm synthesizes insights from wearables -- such as vitals, weight, and single-lead ECG -- chat-based symptom assessment, and the patient's health record to detect disease earlier, notify the care team, and intervene to prevent hospitalizations and other adverse outcomes. This will result in improved health and lower healthcare costs. 
 
 ## The 60-second story
 
